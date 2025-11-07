@@ -25,13 +25,18 @@ struct window_data_t {
   uint64_t device_context;
 } window_data_t;
 
+typedef void(*update_func_t)(void);
+
 WINDOWING_API
 window_data_t
-create_window(const char *classname, const char *title);
+create_window(
+  const char *classname, 
+  const char *title, 
+  int32_t width, int32_t height);
 
 WINDOWING_API
 uint64_t
-handle_message_loop_blocking(void);
+handle_message_loop_blocking(update_func_t func);
 
 WINDOWING_API
 void

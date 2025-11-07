@@ -31,9 +31,41 @@ WndProc(
 	return 0;
 }
 
-window_data_t
-create_window(const char *classname, const char *title)
+static
+void 
+ComputeWindowPosition(
+  int32_t *x, 
+  int32_t *y, 
+  int32_t width, 
+  int32_t height,
+  int32_t screen_width,
+  int32_t screen_height)
 {
+  (*x) = (*y) = 0;
+	if (screen_width <= width || screen_width <= height)
+    return;
+
+	*x = (screen_width - width)/2;
+	*y = (screen_height - height)/2;
+}
+
+window_data_t
+create_window(
+  const char *classname, 
+  const char *title, 
+  int32_t width, 
+  int32_t height)
+{
+  int32_t screenWidth = GetSystemMetrics(SM_CXFULLSCREEN);
+  int32_t screenHeight = GetSystemMetrics(SM_CYFULLSCREEN);
+	RECT r = { 0, 0, width, height };
+  AdjustWindowRect(&r, WS_CAPTION, FALSE);
+  int32_t x, y;
+	ComputeWindowPosition(
+    &x, &y, 
+    width, height, 
+    screenWidth, screenHeight);
+
   WNDCLASSEX wcex = { 0 };
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -55,8 +87,7 @@ create_window(const char *classname, const char *title)
     classname, 
     title, 
     WS_CAPTION, 
-    CW_USEDEFAULT, CW_USEDEFAULT, 
-    CW_USEDEFAULT, CW_USEDEFAULT, 
+    x, y, r.right - r.left, r.bottom - r.top, 
     0, 0, GetModuleHandle(NULL), 0);
 
 	ShowWindow((HANDLE)data.handle, SW_NORMAL);
@@ -68,7 +99,7 @@ create_window(const char *classname, const char *title)
 }
 
 uint64_t
-handle_message_loop_blocking(void)
+handle_message_loop_blocking(update_func_t func)
 {
   MSG msg;
 	while (1) {
@@ -83,6 +114,8 @@ handle_message_loop_blocking(void)
       PostQuitMessage(0);
       continue;
     }
+
+    func();
 	}
 
 End:
