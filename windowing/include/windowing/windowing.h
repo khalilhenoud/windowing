@@ -30,7 +30,7 @@ typedef void(*update_func_t)(void);
 WINDOWING_API
 window_data_t
 create_window(
-  const char *classname, 
+  const char *win_class, 
   const char *title, 
   int32_t width, int32_t height);
 
@@ -41,6 +41,14 @@ handle_message_loop_blocking(update_func_t func);
 WINDOWING_API
 void
 destroy_window(window_data_t *data);
+
+WINDOWING_API
+int32_t
+get_screen_width();
+
+WINDOWING_API
+int32_t
+get_screen_height();
 
 #ifdef __cplusplus
 }

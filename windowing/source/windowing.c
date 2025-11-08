@@ -12,6 +12,18 @@
 #include <Windows.h>
 
 
+int32_t
+get_screen_width()
+{
+  return GetSystemMetrics(SM_CXFULLSCREEN);
+}
+
+int32_t
+get_screen_height()
+{
+  return GetSystemMetrics(SM_CYFULLSCREEN);
+}
+
 LRESULT 
 CALLBACK 
 WndProc(
@@ -51,7 +63,7 @@ ComputeWindowPosition(
 
 window_data_t
 create_window(
-  const char *classname, 
+  const char *win_class, 
   const char *title, 
   int32_t width, 
   int32_t height)
@@ -59,14 +71,16 @@ create_window(
   int32_t screenWidth = GetSystemMetrics(SM_CXFULLSCREEN);
   int32_t screenHeight = GetSystemMetrics(SM_CYFULLSCREEN);
 	RECT r = { 0, 0, width, height };
-  AdjustWindowRect(&r, WS_CAPTION, FALSE);
   int32_t x, y;
+  WNDCLASSEX wcex = { 0 };
+  window_data_t data;
+
+  AdjustWindowRect(&r, WS_CAPTION, FALSE);
 	ComputeWindowPosition(
     &x, &y, 
     width, height, 
     screenWidth, screenHeight);
-
-  WNDCLASSEX wcex = { 0 };
+  
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wcex.lpfnWndProc = (WNDPROC)WndProc;
@@ -77,14 +91,13 @@ create_window(
 	wcex.hCursor = LoadCursor(0, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = 0;
-	wcex.lpszClassName = classname;
+	wcex.lpszClassName = win_class;
 	wcex.hIconSm = 0;
 	RegisterClassEx(&wcex);
 
-  window_data_t data;
   data.handle = (uint64_t)CreateWindowEx(
     0,
-    classname, 
+    win_class, 
     title, 
     WS_CAPTION, 
     x, y, r.right - r.left, r.bottom - r.top, 
@@ -94,7 +107,6 @@ create_window(
 	UpdateWindow((HANDLE)data.handle);
 
   data.device_context = (uint64_t)GetDC((HWND)data.handle);
-  
   return data;
 }
 
