@@ -8,21 +8,13 @@
  * @copyright Copyright (c) 2025
  * 
  */
+#if defined(WIN32) || defined(WIN64)
+#include <windows.h>
+#else
+// TODO: Implement static assert for C using negative indices array.
+#endif
 #include <windowing/windowing.h>
-#include <Windows.h>
 
-
-int32_t
-get_screen_width()
-{
-  return GetSystemMetrics(SM_CXFULLSCREEN);
-}
-
-int32_t
-get_screen_height()
-{
-  return GetSystemMetrics(SM_CYFULLSCREEN);
-}
 
 LRESULT 
 CALLBACK 
@@ -95,7 +87,7 @@ create_window(
 	wcex.hIconSm = 0;
 	RegisterClassEx(&wcex);
 
-  data.handle = (uint64_t)CreateWindowEx(
+  data.handle = (uintptr_t)CreateWindowEx(
     0,
     win_class, 
     title, 
@@ -106,7 +98,7 @@ create_window(
 	ShowWindow((HANDLE)data.handle, SW_NORMAL);
 	UpdateWindow((HANDLE)data.handle);
 
-  data.device_context = (uint64_t)GetDC((HWND)data.handle);
+  data.device_context = (uintptr_t)GetDC((HWND)data.handle);
   return data;
 }
 
@@ -138,4 +130,42 @@ void
 destroy_window(window_data_t *data)
 {
   ReleaseDC((HWND)data->handle, (HDC)data->device_context);
+}
+
+int32_t
+get_window_rect(uintptr_t window_handle, win_rect_t *rect)
+{
+  RECT win_rect;
+  BOOL result = GetWindowRect((HWND)window_handle, &win_rect);
+  rect->left = win_rect.left;
+  rect->right = win_rect.right;
+  rect->top = win_rect.top;
+  rect->bottom = win_rect.bottom;
+  return result;
+}
+
+int32_t
+screen_to_client(uintptr_t window_handle, win_point_t *point)
+{
+  BOOL result;
+  POINT pn;
+  pn.x = point->x;
+  pn.y = point->y;
+  result = ScreenToClient((HWND)window_handle, &pn);
+  point->x = pn.x;
+  point->y = pn.y;
+  return result;
+}
+
+int32_t
+client_to_screen(uintptr_t window_handle, win_point_t *point)
+{
+  BOOL result;
+  POINT pn;
+  pn.x = point->x;
+  pn.y = point->y;
+  result = ClientToScreen((HWND)window_handle, &pn);
+  point->x = pn.x;
+  point->y = pn.y;
+  return result;
 }
