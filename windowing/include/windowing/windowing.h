@@ -1,12 +1,12 @@
 /**
  * @file windowing.h
  * @author khalilhenoud@gmail.com
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2025-11-01
- * 
+ *
  * @copyright Copyright (c) 2025
- * 
+ *
  */
 #ifndef WINDOWING_HEADER_H
 #define WINDOWING_HEADER_H
@@ -44,8 +44,8 @@ typedef void(*update_func_t)(void);
 WINDOWING_API
 window_data_t
 create_window(
-  const char *win_class, 
-  const char *title, 
+  const char *win_class,
+  const char *title,
   int32_t width, int32_t height);
 
 WINDOWING_API

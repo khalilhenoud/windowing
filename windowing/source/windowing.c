@@ -1,12 +1,12 @@
 /**
  * @file windowing.c
  * @author khalilhenoud@gmail.com
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2025-11-01
- * 
+ *
  * @copyright Copyright (c) 2025
- * 
+ *
  */
 #if defined(WIN32) || defined(WIN64)
 #include <windows.h>
@@ -16,12 +16,12 @@
 #include <windowing/windowing.h>
 
 
-LRESULT 
-CALLBACK 
+LRESULT
+CALLBACK
 WndProc(
-  HWND g_hWnd, 
-  UINT message, 
-  WPARAM wParam, 
+  HWND g_hWnd,
+  UINT message,
+  WPARAM wParam,
   LPARAM lParam)
 {
 	switch (message) {
@@ -36,11 +36,11 @@ WndProc(
 }
 
 static
-void 
+void
 ComputeWindowPosition(
-  int32_t *x, 
-  int32_t *y, 
-  int32_t width, 
+  int32_t *x,
+  int32_t *y,
+  int32_t width,
   int32_t height,
   int32_t screen_width,
   int32_t screen_height)
@@ -55,9 +55,9 @@ ComputeWindowPosition(
 
 window_data_t
 create_window(
-  const char *win_class, 
-  const char *title, 
-  int32_t width, 
+  const char *win_class,
+  const char *title,
+  int32_t width,
   int32_t height)
 {
   int32_t screenWidth = GetSystemMetrics(SM_CXFULLSCREEN);
@@ -69,10 +69,10 @@ create_window(
 
   AdjustWindowRect(&r, WS_CAPTION, FALSE);
 	ComputeWindowPosition(
-    &x, &y, 
-    width, height, 
+    &x, &y,
+    width, height,
     screenWidth, screenHeight);
-  
+
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wcex.lpfnWndProc = (WNDPROC)WndProc;
@@ -89,10 +89,10 @@ create_window(
 
   data.handle = (uintptr_t)CreateWindowEx(
     0,
-    win_class, 
-    title, 
-    WS_CAPTION, 
-    x, y, r.right - r.left, r.bottom - r.top, 
+    win_class,
+    title,
+    WS_CAPTION,
+    x, y, r.right - r.left, r.bottom - r.top,
     0, 0, GetModuleHandle(NULL), 0);
 
 	ShowWindow((HANDLE)data.handle, SW_NORMAL);
